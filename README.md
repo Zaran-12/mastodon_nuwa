@@ -112,7 +112,8 @@ web-push generate-vapid-keys
 ```
 
 2.Redis::CannotConnectError: Error connecting to Redis on localhost:6379 
-Redis连接不上，需要自己临时搭建一个redis，参考：https://blog.csdn.net/weixin_40165163/article/details/103184001，搭建完后在一个独立的终端运行redis-server，不要关闭
+Redis连接不上，需要自己临时搭建一个redis，参考：https://blog.csdn.net/weixin_40165163/article/details/103184001，
+搭建完后在一个独立的终端运行redis-server，不要关闭
 安装完了之后卸载redis
 
 ```

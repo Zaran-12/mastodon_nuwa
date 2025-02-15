@@ -95,6 +95,10 @@ REDIS_HOST=localhost
 ### 初始化数据库
 
 ```
+gem install rails
+```
+
+```
 
 RAILS_ENV=production bundle exec rails db:setup
 ```

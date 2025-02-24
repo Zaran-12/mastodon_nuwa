@@ -15,183 +15,246 @@
 
 没有域名用localhost也可以
 
+### 切换root模式
+```
+sudo -i
+```
+### 安装node.js
+```
+curl -sL https://deb.nodesource.com/setup_16.x | bash -
+apt-get install nodejs -y
+```
+### 安装yarn
+```
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+```
 ### 安装系统依赖 (Ubuntu/Debian为例)
 
 ```
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y \
-  git curl build-essential libssl-dev libreadline-dev \
-  zlib1g-dev libidn11-dev libicu-dev libpq-dev redis-server \
-  imagemagick ffmpeg libprotobuf-dev protobuf-compiler
-
+apt update
+sudo snap install --classic certbot
+sudo apt install libgdbm-dev
+apt install -y \
+  imagemagick ffmpeg libpq-dev libxml2-dev libxslt1-dev file git-core \
+  g++ libprotobuf-dev protobuf-compiler pkg-config nodejs gcc autoconf \
+  bison build-essential libssl-dev libyaml-dev libreadline6-dev \
+  zlib1g-dev libncurses5-dev libffi-dev libgdbm-dev \
+  nginx redis-server redis-tools postgresql postgresql-contrib \
+  certbot yarn libidn11-dev libicu-dev libjemalloc-dev
+sudo apt install python3-certbot-nginx
 ```
-
-### 安装Ruby和Node.js
-
+### 创建一个mastodon用户
 ```
-
+adduser --disabled-login mastodon
+在这里会问你一些问题
+Enter the new value, or press ENTER for the default
+	Full Name []: Mastodon
+	Room Number []: 
+	Work Phone []: 
+	Home Phone []: 
+	Other []: 
+Is the information correct? [Y/n] y
+```
+```
+sudo usermod -s /bin/bash mastodon
+su - mastodon
+```
+### 安装 rbenv 和 rbenv-build
+```
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+cd ~/.rbenv && src/configure && make -C src
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+exec bash
+cd ../
 source ~/.bashrc
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 rbenv install 3.0.6
 rbenv global 3.0.6
-
 ```
-
-### 安装Node.js 16.x和Yarn：
-
+### 安装 bundler
 ```
-
-curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-sudo apt install -y nodejs
-npm install -g yarn
-
+gem install bundler
+exit
 ```
-
-### 配置PostgreSQL
-
+### 配置 PostgreSQL
 ```
-
 sudo -u postgres psql
-# 在PostgreSQL控制台执行：
 CREATE USER mastodon CREATEDB;
-ALTER USER mastodon WITH PASSWORD 'newpassword';
+ALTER USER mastodon WITH PASSWORD '123';
 \q
-
 ```
-
-### 克隆Mastodon仓库并安装依赖
-
+### 配置 Mastodon
 ```
-
-git clone https://github.com/mastodon/mastodon.git
-cd mastodon
-git checkout v4.1.4  # 使用稳定版本
+su - mastodon
+git clone https://github.com/mastodon/mastodon.git live && cd live
+git checkout v4.1.4
 bundle config deployment 'true'
 bundle config without 'development test'
 bundle install -j$(nproc)
 yarn install --pure-lockfile
+```
+### 生成配置文件
+它将：
+
+创建一个配置文件
+预编译静态文件
+创建数据库schema
+配置文件被保存在.env.production。
+```
+RAILS_ENV=production bundle exec rake mastodon:setup
+```
+配置过程如下
+```
+Domain name: nuwa.social
+
+Single user mode disables registrations and redirects the landing page to your public profile.
+Do you want to enable single user mode? No
+
+Are you using Docker to run Mastodon? no
+
+PostgreSQL host: /var/run/postgresql
+PostgreSQL port: 5432
+Name of PostgreSQL database: mastodon
+Name of PostgreSQL user: mastodon
+Password of PostgreSQL user: 
+Database configuration works! 🎆
+
+Redis host: localhost
+Redis port: 6379
+Redis password: 
+Redis configuration works! 🎆
+
+Do you want to store uploaded files on the cloud? No
+
+Do you want to send e-mails from localhost? No
+SMTP server: smtp-relay.brevo.com
+SMTP port: 587
+SMTP username: 8651ac001@smtp-brevo.com
+SMTP password: 
+SMTP authentication: plain
+SMTP OpenSSL verify mode: none
+Enable STARTTLS: auto
+E-mail address to send e-mails "from": zaran <bg@nuwa.social>
+Send a test e-mail with this configuration right now? no
+
+This configuration will be written to .env.production
+Save configuration? Yes
+
+Now that configuration is saved, the database schema must be loaded.
+If the database already exists, this will erase its contents.
+Prepare the database now? Yes
+Running `RAILS_ENV=production rails db:setup` ...
+
+
+Created database 'mastodon'
+Done!
+
+The final step is compiling CSS/JS assets.
+This may take a while and consume a lot of RAM.
+Compile the assets now? Yes
+Running `RAILS_ENV=production rails assets:precompile` ...
+
+
+yarn install v1.22.22
+[1/6] Validating package.json...
+[2/6] Resolving packages...
+[3/6] Fetching packages...
+[4/6] Linking dependencies...
+warning Workspaces can only be enabled in private projects.
+[5/6] Building fresh packages...
+[6/6] Cleaning modules...
+Done in 4.25s.
+I, [2025-02-23T16:09:15.427547 #37664]  INFO -- : Writing /home/mastodon/live/public/assets/doorkeeper/admin/application-a644908e7bab54fb749be0f59fb64a7480bbf9c4c2b79d4a65791cb7ab4d8730.css
+I, [2025-02-23T16:09:15.427832 #37664]  INFO -- : Writing /home/mastodon/live/public/assets/doorkeeper/admin/application-a644908e7bab54fb749be0f59fb64a7480bbf9c4c2b79d4a65791cb7ab4d8730.css.gz
+I, [2025-02-23T16:09:15.432482 #37664]  INFO -- : Writing /home/mastodon/live/public/assets/doorkeeper/application-c93dac2ad9d65e3393e0e2c958481e86ef7a5e5b0f6ce406842a7b99b25a4850.css
+I, [2025-02-23T16:09:15.432525 #37664]  INFO -- : Writing /home/mastodon/live/public/assets/doorkeeper/application-c93dac2ad9d65e3393e0e2c958481e86ef7a5e5b0f6ce406842a7b99b25a4850.css.gz
+I, [2025-02-23T16:09:15.433421 #37664]  INFO -- : Writing /home/mastodon/live/public/assets/pghero/favicon-db10337a56c45eb43c22ff5019546b520fa22c7281d4d385f235cbca67ed26bb.png
+I, [2025-02-23T16:09:15.589642 #37664]  INFO -- : Writing /home/mastodon/live/public/assets/pghero/application-a60bf0a452ed064fef3594cf52a4c998712da7c76150f890f4eaa644f59671e4.js
+I, [2025-02-23T16:09:15.589725 #37664]  INFO -- : Writing /home/mastodon/live/public/assets/pghero/application-a60bf0a452ed064fef3594cf52a4c998712da7c76150f890f4eaa644f59671e4.js.gz
+I, [2025-02-23T16:09:15.593019 #37664]  INFO -- : Writing /home/mastodon/live/public/assets/pghero/application-c31338f656687c1d733bb0f48d40acd076e24060f3dcff83b34870e4ccc2789d.css
+I, [2025-02-23T16:09:15.593053 #37664]  INFO -- : Writing /home/mastodon/live/public/assets/pghero/application-c31338f656687c1d733bb0f48d40acd076e24060f3dcff83b34870e4ccc2789d.css.gz
+Compiling...
+Compiled all packs in /home/mastodon/live/public/packs
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+
+Done!
+
+All done! You can now power on the Mastodon server 🐘
+
+Do you want to create an admin user straight away? Yes
+Username: admin
+E-mail: 11@qq.com
+You can login with the password: a94c4753daeae884faa5fa8b085984a8
+You can change your password once you login.
 
 ```
-
-### 生成Mastodon配置文件
-
+```
+exit
+```
+### 配置 nginx
+```
+cp /home/mastodon/live/dist/nginx.conf /etc/nginx/sites-available/mastodon
+ln -s /etc/nginx/sites-available/mastodon /etc/nginx/sites-enabled/mastodon
 ```
 
-cp .env.production.sample .env.production
-nano .env.production
+编辑 /etc/nginx/sites-available/mastodon
 
+替换 example.com 为你自己的域名
+启用 ssl_certificate 和 ssl_certificate_key 这两行，并把它们替换成如下两行（如果你使用自己的证书的话则可以忽略这一步）
+```
+ssl_certificate     /etc/ssl/certs/ssl-cert-snakeoil.pem;
+ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
+```
+ssl证书可参考我之前发的mastodon_nuwa
+### 配置 systemd 服务
+```
+cp /home/mastodon/live/dist/mastodon-*.service /etc/systemd/system/
+
+systemctl daemon-reload
+systemctl start mastodon-web mastodon-sidekiq mastodon-streaming
+systemctl enable mastodon-*
+
+sudo systemctl enable mastodon-web.service
+sudo systemctl enable mastodon-sidekiq.service
+sudo systemctl enable mastodon-streaming.service
+
+sudo systemctl start mastodon-web.service
+sudo systemctl start mastodon-sidekiq.service
+sudo systemctl start mastodon-streaming.service
+
+sudo systemctl status mastodon-web.service
+sudo systemctl status mastodon-sidekiq.service
+sudo systemctl status mastodon-streaming.service
+```
+### 要停止这些服务，你可以使用 systemctl stop 命令
+```
+sudo systemctl stop mastodon-web.service
+sudo systemctl stop mastodon-sidekiq.service
+sudo systemctl stop mastodon-streaming.service
+```
+### 如果你不希望这些服务在系统启动时自动启动，可以使用 systemctl disable 命令：
+```
+sudo systemctl disable mastodon-web.service
+sudo systemctl disable mastodon-sidekiq.service
+sudo systemctl disable mastodon-streaming.service
 ```
 
-修改LOCAL_DOMAIN=yourDomain.com
-DB_HOST=localhost
-DB_USER=mastodon
-DB_NAME=mastodon
-DB_PASS=your_password  # 与PostgreSQL用户密码一致
-REDIS_HOST=localhost
-
-### 初始化数据库
-
+### 下次需要启动这些服务时，可以使用 systemctl start 命令：
 ```
-gem install rails
+sudo systemctl start mastodon-web.service
+sudo systemctl start mastodon-sidekiq.service
+sudo systemctl start mastodon-streaming.service
 ```
 
+### 如果你想让这些服务在系统启动时自动启动，可以使用 systemctl enable 命令：
+```
+sudo systemctl enable mastodon-web.service
+sudo systemctl enable mastodon-sidekiq.service
+sudo systemctl enable mastodon-streaming.service
 ```
 
-RAILS_ENV=production bundle exec rails db:setup
-```
 
-### 这里可能遇见一些问题
-
-1.ArgumentError:scret_key_base for production environment must be a type of String.            这是因为缺少密钥，通过运行以下几个代码来生成密钥，生成的密钥填在.env.production的对应位置
-
-```
-
-RAILS_ENV=production rails secret
-npm install -g web-push
-web-push generate-vapid-keys
-
-```
-
-2.Redis::CannotConnectError: Error connecting to Redis on localhost:6379 
-Redis连接不上，需要自己临时搭建一个redis，参考：https://blog.csdn.net/weixin_40165163/article/details/103184001
-搭建完后在一个独立的终端运行redis-server，不要关闭
-安装完了之后卸载redis
-
-```
-
-sudo apt-get remove --purge redis-server
-
-```
-
-3.ActiveRecord::ProtectedEnvironmentError ，表示你在生产环境中运行了一个破坏性操作（如重建数据库），而 Rails 会对生产环境进行保护，避免这种操作。
-
-```
-
-DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=production bundle exec rails db:setup
-
-```
-
-### 编译静态资源
-
-```
-
-RAILS_ENV=production bundle exec rails assets:precompile
-
-```
-
-### 这里可能遇见一些问题
-
-1.code: 'ERR_OSSL_EVP_UNSUPPORTED'
-
-```
-
-export NODE_OPTIONS=--openssl-legacy-provider
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-source ~/.bashrc
-nvm install 16
-nvm use 16
-unset NODE_OPTIONS
-node -v
-
-```
-
-### 恭喜你🎉成功搭建，现在运行下面的命令，每一个命令都在一个单独的终端运行
-
-```
-
-# Web服务器 (端口3000)
-RAILS_ENV=production bundle exec rails s -p 3000 -b 0.0.0.0
-# Sidekiq任务队列
-RAILS_ENV=production bundle exec sidekiq
-# Streaming服务 (端口4000)
-RAILS_ENV=production node ./streaming
-
-```
-
-### 创建管理员账户
-
-```
-RAILS_ENV=production bundle exec rails mastodon:webpush:generate_vapid_key
-RAILS_ENV=production bundle exec rails mastodon:setup
-# 按提示输入邮箱和密码，获取管理员权限
-
-```
-
-### 关掉代理访问
-
-```
-
-http://yourDomain.com
-
-```
-
-或者你用的localhost
-
-```
-
-localhost：3000
-
-```

@@ -1,35 +1,35 @@
 
 
 
-# 本地部署 Mastodon - 一个去中心化的社交平台(非docker方式）
+# Local deployment Mastodon - a decentralized social platform (non-docker method)
 
-## 开始之前
+## before starting
 
-准备一个域名和证书
+Prepare a domain name and certificate
 
-- 域名：`yourDomain.com`
+- domain：`yourDomain.com`
 
-如果只是想本地跑一下，也行
+If you just want to run it locally, that’s fine too
 
-- 修改hosts：`127.0.0.1 yourDomain.com`
+- Revise hosts：`127.0.0.1 yourDomain.com`
 
-没有域名用localhost也可以
+If you don’t have a domain name, you can also use localhost.
 
-### 切换root模式
+### Switch to root mode
 ```
 sudo -i
 ```
-### 安装node.js
+### Install node.js
 ```
 curl -sL https://deb.nodesource.com/setup_16.x | bash -
 apt-get install nodejs -y
 ```
-### 安装yarn
+### Install yarn
 ```
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 ```
-### 安装系统依赖 (Ubuntu/Debian为例)
+### Install system dependencies (Ubuntu/Debian as an example)
 
 ```
 apt update
@@ -44,10 +44,10 @@ apt install -y \
   certbot yarn libidn11-dev libicu-dev libjemalloc-dev
 sudo apt install python3-certbot-nginx
 ```
-### 创建一个mastodon用户
+### Create a mastodon user
 ```
 adduser --disabled-login mastodon
-在这里会问你一些问题
+- You will be asked some questions here
 Enter the new value, or press ENTER for the default
 	Full Name []: Mastodon
 	Room Number []: 
@@ -60,7 +60,7 @@ Is the information correct? [Y/n] y
 sudo usermod -s /bin/bash mastodon
 su - mastodon
 ```
-### 安装 rbenv 和 rbenv-build
+### Install rbenv and rbenv-build
 ```
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 cd ~/.rbenv && src/configure && make -C src
@@ -73,19 +73,19 @@ git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 rbenv install 3.0.6
 rbenv global 3.0.6
 ```
-### 安装 bundler
+### Install bundler
 ```
 gem install bundler
 exit
 ```
-### 配置 PostgreSQL
+### Configure PostgreSQL
 ```
 sudo -u postgres psql
 CREATE USER mastodon CREATEDB;
 ALTER USER mastodon WITH PASSWORD '123';
 \q
 ```
-### 配置 Mastodon
+### Configure Mastodon
 ```
 su - mastodon
 git clone https://github.com/mastodon/mastodon.git live && cd live
@@ -95,17 +95,17 @@ bundle config without 'development test'
 bundle install -j$(nproc)
 yarn install --pure-lockfile
 ```
-### 生成配置文件
-它将：
+### Generate configuration file
+It will：
 
-创建一个配置文件
-预编译静态文件
-创建数据库schema
-配置文件被保存在.env.production。
+Create a configuration file
+Precompile static files
+Create database schema
+Configuration files are saved in .env.production.
 ```
 RAILS_ENV=production bundle exec rake mastodon:setup
 ```
-配置过程如下
+The configuration process is as follows
 ```
 Domain name: nuwa.social
 
@@ -195,22 +195,22 @@ You can change your password once you login.
 ```
 exit
 ```
-### 配置 nginx
+### Configure nginx
 ```
 cp /home/mastodon/live/dist/nginx.conf /etc/nginx/sites-available/mastodon
 ln -s /etc/nginx/sites-available/mastodon /etc/nginx/sites-enabled/mastodon
 ```
 
-编辑 /etc/nginx/sites-available/mastodon
+edit /etc/nginx/sites-available/mastodon
 
-替换 example.com 为你自己的域名
-启用 ssl_certificate 和 ssl_certificate_key 这两行，并把它们替换成如下两行（如果你使用自己的证书的话则可以忽略这一步）
+Replace example.com with your own domain name
+Enable the ssl_certificate and ssl_certificate_key lines and replace them with the following two lines (you can ignore this step if you use your own certificate)
 ```
 ssl_certificate     /etc/ssl/certs/ssl-cert-snakeoil.pem;
 ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
 ```
-ssl证书可参考我之前发的mastodon_docker
-### 配置 systemd 服务
+For the ssl certificate, please refer to the mastodon_docker I sent before.
+### Configure systemd service
 ```
 cp /home/mastodon/live/dist/mastodon-*.service /etc/systemd/system/
 
@@ -230,27 +230,27 @@ sudo systemctl status mastodon-web.service
 sudo systemctl status mastodon-sidekiq.service
 sudo systemctl status mastodon-streaming.service
 ```
-### 要停止这些服务，你可以使用 systemctl stop 命令
+### To stop these services, you can use the systemctl stop command
 ```
 sudo systemctl stop mastodon-web.service
 sudo systemctl stop mastodon-sidekiq.service
 sudo systemctl stop mastodon-streaming.service
 ```
-### 如果你不希望这些服务在系统启动时自动启动，可以使用 systemctl disable 命令：
+### If you do not want these services to start automatically when the system starts, you can use the systemctl disable command:
 ```
 sudo systemctl disable mastodon-web.service
 sudo systemctl disable mastodon-sidekiq.service
 sudo systemctl disable mastodon-streaming.service
 ```
 
-### 下次需要启动这些服务时，可以使用 systemctl start 命令：
+### The next time you need to start these services, you can use the systemctl start command:
 ```
 sudo systemctl start mastodon-web.service
 sudo systemctl start mastodon-sidekiq.service
 sudo systemctl start mastodon-streaming.service
 ```
 
-### 如果你想让这些服务在系统启动时自动启动，可以使用 systemctl enable 命令：
+### If you want these services to start automatically when the system starts, you can use the systemctl enable command:
 ```
 sudo systemctl enable mastodon-web.service
 sudo systemctl enable mastodon-sidekiq.service

@@ -11,7 +11,7 @@ cd /home/mastodon/live
 ```
 ### Run the Rails console to interact with your Mastodon application:
 ```
-sudo -u mastodon RAILS_ENV=production bundle exec rails console
+RAILS_ENV=production bundle exec rails console
 ```
 ----------------------------------------------
 ## update password

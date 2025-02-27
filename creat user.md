@@ -1,9 +1,9 @@
 
 # the method to Update Password，Create User，Grant user administrator rights，Remove user administrator rights in rear
 
-### swich mastodon:
+### switch into mastodon:
 ```
-sudo - mastodon
+su - mastodon
 ```
 ### Navigate to your Mastodon directory:
 ```

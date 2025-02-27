@@ -47,7 +47,7 @@ sudo apt install python3-certbot-nginx
 ### Create a mastodon user
 ```
 adduser --disabled-login mastodon
-- You will be asked some questions here
+# You will be asked some questions here
 Enter the new value, or press ENTER for the default
 	Full Name []: Mastodon
 	Room Number []: 

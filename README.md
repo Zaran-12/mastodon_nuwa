@@ -209,7 +209,7 @@ ln -s /etc/nginx/sites-available/mastodon /etc/nginx/sites-enabled/mastodon
 ssl_certificate     /etc/ssl/certs/ssl-cert-snakeoil.pem;
 ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
 ```
-ssl证书可参考我之前发的mastodon_nuwa
+ssl证书可参考我之前发的mastodon_docker
 ### 配置 systemd 服务
 ```
 cp /home/mastodon/live/dist/mastodon-*.service /etc/systemd/system/

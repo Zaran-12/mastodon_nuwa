@@ -249,7 +249,11 @@ sudo systemctl start mastodon-web.service
 sudo systemctl start mastodon-sidekiq.service
 sudo systemctl start mastodon-streaming.service
 ```
-
+```
+sudo systemctl start mastodon-web-nuwa.service
+sudo systemctl start mastodon-sidekiq-nuwa.service
+sudo systemctl start mastodon-streaming-nuwa.service
+```
 ### If you want these services to start automatically when the system starts, you can use the systemctl enable command:
 ```
 sudo systemctl enable mastodon-web.service

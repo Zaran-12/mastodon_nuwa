@@ -235,6 +235,10 @@ sudo systemctl status mastodon-streaming.service
 sudo systemctl stop mastodon-web.service
 sudo systemctl stop mastodon-sidekiq.service
 sudo systemctl stop mastodon-streaming.service
+
+sudo systemctl stop mastodon-web-nuwa.service
+sudo systemctl stop mastodon-sidekiq-nuwa.service
+sudo systemctl stop mastodon-streaming-nuwa.service
 ```
 ### If you do not want these services to start automatically when the system starts, you can use the systemctl disable command:
 ```

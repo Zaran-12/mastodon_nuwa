@@ -235,7 +235,8 @@ sudo systemctl status mastodon-streaming.service
 sudo systemctl stop mastodon-web.service
 sudo systemctl stop mastodon-sidekiq.service
 sudo systemctl stop mastodon-streaming.service
-
+```
+```
 sudo systemctl stop mastodon-web-nuwa.service
 sudo systemctl stop mastodon-sidekiq-nuwa.service
 sudo systemctl stop mastodon-streaming-nuwa.service
@@ -263,6 +264,11 @@ sudo systemctl start mastodon-streaming-nuwa.service
 sudo systemctl enable mastodon-web.service
 sudo systemctl enable mastodon-sidekiq.service
 sudo systemctl enable mastodon-streaming.service
+```
+```
+sudo systemctl restart mastodon-web-nuwa.service
+sudo systemctl restart mastodon-sidekiq-nuwa.service
+sudo systemctl restart mastodon-streaming-nuwa.service
 ```
 
 

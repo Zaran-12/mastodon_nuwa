@@ -1,10 +1,10 @@
-#You want to run two Mastodon instances on the same server, for example:
+# You want to run two Mastodon instances on the same server, for example:
 - One is nuwasocial.com
 - One is libra2.org (for example)
 
 Both instances run simultaneously without affecting each other.
 
-##🔧 Detailed steps
+## 🔧 Detailed steps
 1️⃣ Create a directory for the second instance:
 ```
 cd /home/mastodon/
